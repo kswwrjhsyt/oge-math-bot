@@ -295,15 +295,38 @@ def run_dummy_server():
     server.serve_forever()
 
 
+import os
+from aiohttp import web
+
+
+# Хендлер, который будет отвечать хостингу Render и UptimeRobot
+async def handle(request):
+    return web.Response(text="Бот активен и работает!")
+
+
 async def main():
     logger.info("Бот запущен")
 
-    # Запускаем технический сервер в отдельном потоке, чтобы Render и UptimeRobot были довольны
-    threading.Thread(target=run_dummy_server, daemon=True).start()
+    # Создаем микро веб-сервер внутри aiogram
+    app = web.Application()
+    app.router.add_get('/', handle)
 
+    # Получаем порт от Render
+    port = int(os.getenv("PORT", 8080))
+
+    # Запускаем веб-сервер в фоновом режиме
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+    logger.info(f"Технический сервер успешно открыл порт {port}")
+
+    # Запускаем самого бота
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
+    import asyncio
+
     asyncio.run(main())
