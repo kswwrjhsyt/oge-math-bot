@@ -25,7 +25,8 @@ if not TOKEN:
 # Инициализируем бота и диспетчер
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
-
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 # -------------------------
 # 📚 ТЕМЫ
 # -------------------------
