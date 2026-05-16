@@ -284,11 +284,26 @@ async def callbacks(callback: CallbackQuery):
 # -------------------------
 # 🚀 ЗАПУСК
 # -------------------------
+import threading
+from http.server import SimpleHTTPRequestHandler, HTTPServer
+
+
+def run_dummy_server():
+    port = int(os.getenv("PORT", 8080))
+    server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
+    print(f"Технический сервер запущен на порту {port}")
+    server.serve_forever()
+
+
 async def main():
     logger.info("Бот запущен")
-    # Удаляем вебхуки (на случай, если они были) и запускаем поллинг
+
+    # Запускаем технический сервер в отдельном потоке, чтобы Render и UptimeRobot были довольны
+    threading.Thread(target=run_dummy_server, daemon=True).start()
+
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
