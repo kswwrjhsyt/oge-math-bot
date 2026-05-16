@@ -7,18 +7,22 @@ from aiogram.filters import CommandStart
 
 # ---------------------------------
 # 🔐 ТОКЕН (безопасное получение)
-# ---------------------------------
-try:
-    from config import TOKEN
-except ImportError:
-    bot = Bot(token=os.getenv('BOT_TOKEN'))
+# --------ЫЫ-------------------------
+# Пытаемся взять токен из переменных окружения (для Render)
+TOKEN = os.getenv('BOT_TOKEN')
 
+# Если на Render переменная не найдена, пытаемся взять её из локального config.py (для ПК)
 if not TOKEN:
-    raise ValueError("❌ Токен не найден. Добавьте переменную окружения BOT_TOKEN на сервере или создайте config.py")
+    try:
+        from config import TOKEN
+    except ImportError:
+        pass
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Проверяем, удалось ли хоть откуда-то получить токен
+if not TOKEN:
+    raise ValueError("❌ Токен не найден ни в переменных окружения, ни в config.py")
 
+# Инициализируем бота и диспетчер
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
