@@ -1,5 +1,5 @@
-import asyncio
 import os
+import asyncio
 import logging
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, FSInputFile, Message, CallbackQuery
@@ -11,7 +11,7 @@ from aiogram.filters import CommandStart
 try:
     from config import TOKEN
 except ImportError:
-    TOKEN = os.getenv("BOT_TOKEN")
+    bot = Bot(token=os.getenv('BOT_TOKEN'))
 
 if not TOKEN:
     raise ValueError("❌ Токен не найден. Добавьте переменную окружения BOT_TOKEN на сервере или создайте config.py")
